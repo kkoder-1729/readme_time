@@ -1,94 +1,131 @@
-# Aspect-level Supervised Sentiment Analysis (Entity/ Feature-level Sentiment Analysis)
+# Unsupervised Sentiment Analysis
 
-> Aim: Analyze feedbacks by extracting the topics (aspects) and then evaluating the sentiment of each topic. Analyze feedback by evaluating the sentiment of multiple entities present in the feedback. 
 
-> Impact: help users to get the aspect scores of their feedbacks to analyze their weak and strong domain. Useful to generate a performance report of an employee based on feedbacks. Helpful for a user to understand where the effort is missing and where to continue with the same pace based on his/her feedbacks.
+> Aim: Analyze work and performance through different aspects and factors under various domains based on feedback.
+
+> Impact: help users to analyze work and performance through different aspects and factors under various domains based on feedback.
 
 
 ## Data
 
-The data used is a part of an open-source data available on SemEval, it can be downloaded from [[Link]](http://alt.qcri.org/semeval2016/task5/index.php?id=data-and-tools). 
-
-The data used is already available under ./dataset/ folder. It contains data of SemEval 14, SemEval 15, and SemEval 16 as data_14, data_15 and data_16 respectively. the document-level datasets can be found under ./dataset/labels/.
+The data used is a part of an open-source data available on Kaggle, it can be downloaded from [[Link]](https://www.kaggle.com/fireball684/hackerearthericsson?select=train.csv). The extracted data used is available under the ./data/ folder. It contains the original dataset extracted, pre-processed dataset, and the final dataset used for the current purpose. You can use the data available under ./data/final/ folder for training and testing purposes.  
 
 
 ## Technologies Used:
 
-* Bi-RNN
-* Attention Mechanism
-* LSTM
+* Bert Model - Transformer
+* Transfer Learning
+* K-Means
+* K Nearest Neighbor
+
+
+
+## Visualization:
+
+* textblob
+* seaborn
+* matplotlib
+* TensorFlow projector
+* umap
+* PCA
+* t-SNE
 
 
 ## Dependencies
 
 * Tensorflow
-* Keras
 * Numpy
 * Python
 * NLTK
+* sentence transformers/bert embeddings
 
 
+## Pre-Processing
 
-## Pre-Training
+The pre-processed data can be found under ./data/final/ folder. 
 
-The pretrained weights used in our task are provided at pretrained_weights/. You can use them directly for initializing aspect-level models.
+For reading the dataset and writing it to an array of sentences, the following two codes are used:
 
-Or if you want to retrain on another dataset, execute the command below under code_pretrain/:
-
-```
-CUDA_VISIBLE_DEVICES="0" python pre_train.py \
---domain labels \
-```
-
-The trained model parameters will be saved under pretrained_weights/. You can find more arguments defined in pre_train.py with default values used in our experiments.
-
+- train_read.py
+- test_read.py
 
 
 
 ## Word Embeddings
 
-The pre-trained Glove vectors (on 840B tokens) are used for initializing word embeddings. They can be downloaded from [[Link]](https://nlp.stanford.edu/projects/glove/). These contain the following 4 glove embeddings. You can download 840B tokens for our purpose.
 
-- glove.6B.zip
-- glove.42B.300d.zip
-- glove.840B.300d.zip
-- glove.twitter.27B.zip
+The Word2Vec Embeddings are used for transforming the sentences to vectors: 
 
+The code used for this purpose is under ./K-Means/BERT+KMeans+TensorFlow_Projector_(PCA_TSNE).ipynb 
 
-However, the extracted subset of Glove vectors for each dataset is available under ./glove/ folder, the size of which is much smaller as it is the subset of the original glove embeddings based on the used dataset. 
-
-The code used for word embeddings is embeddings.py
+However, these embeddings did not prove to be efficient for our purpose. To overcome this, we have introduced Transfer Learning to our model by using Bert as a model.
 
 
+## BERT
 
-## Training and evaluation
+To get the efficient sentence embeddings, Bert is used in our task. Bert can be used in the following two ways:
 
-To train aspect-level sentiment classifier, execute the command below under code/:
+1) Bert as a service
 
-```
-CUDA_VISIBLE_DEVICES="0" python train.py \
---domain $domain \
---alpha 0.1 \
---is-pretrain 1 \
-```
+Install the Bert server and client and start the service. Pre-trained Bert model can be downloaded from [[Link]](https://github.com/hanxiao/bert-as-service)
 
-where 
-$domain in ['data_14', 'data_15', 'data_16'] denotes the corresponding aspect-level domain. 
---alpha denotes the weight of the labels training objective. 
---is-pretrain is set to either 0 or 1, denoting whether to use pretrained weights for initialization. 
+Then, start the BERT service and use the Client to get Sentence Encodes. The code for the same can be found in these two files:
 
-You can find more arguments defined in train.py with default values used in our experiments. At the end of each epoch, results on training, validation, and test sets will be printed respectively.
+- Bert_as_service.py
+- BERT_as_a_Service.ipynb
 
-The codes used for training and testing purpose are available in:
+2) Install Bert Model
 
-- build.py
-- attention_layer.py
-- adam_opt.py
-- main.py
+Install the Bert model to get sentence embeddings using pip installer. The dependencies for using this can be found in the following file. It contains a step-wise approach to use Bert Model.
+
+- Bert_model.py
 
 
-The step-by-step illustration of the whole task is implemented under ./IPYNB FILES/ folder. The steps can be followed in the same way as implemented in .ipynb files. 
 
+
+
+## K-Means
+
+The Clustering algorithm used to make clusters of the bert embeddings is K-Means.
+The code for making two separate clusters of positive and negative sentences can be found under ./K-Means/K-Means (2-clusters-+ve and -ve).py
+
+The T-distributed Stochastic Neighbor Embedding is also used for visualizing the embeddings. Following codes contains the code for K-Means Clustering:
+
+- a) 2 Clusters -> ./K-Means/K-Means (2-clusters-+ve and -ve).py
+- b) 5 Clusters -> ./K-Means/K-Means (5-clusters).py
+
+These can be changed to any number of clusters (value of K) by changing the parameters in the code above.
+
+Refer: A step-by-step approach for the task is implemented under the ./K-Means/BERT+KMeans+TensorFlow_Projector_(PCA_TSNE).ipynb.
+
+
+
+## K Nearest Neighbor (KNN)
+
+A KNN model is also applied on the Bert embeddings to check on the test data.
+For initializing the K value, a code for finding the optimal value of K can be found under ./KNN/Initialize_K_for_KNN.py
+
+The code to check on the test data and compute the accuracy metric is available in ./KNN/K_Nearest_Neighbor_KNN.py
+
+Refer: A step-by-step approach for the task is implemented under the ./KNN/Bert+K_Nearest_Neighbour_(KNN).ipynb
+
+
+
+
+## TensorFlow Projector
+
+To plot the n-dimensional embeddings of the data sentences obtained from any model or embeddings (Bert/ Word2Vec), you need to create a DataFile of the embeddings and a MetaData File for assigned a label to every embedding. Then visualization can be done through TensorFlow Projector([[Link]](https://projector.tensorflow.org/)).
+
+The code to generate DataFile and MetaData File of any dataset can be found under ./tensorflow_projector/.
+
+Word2Vec_Embeddings_Clustering - 2_Clusters.py -> Word2Vec Visualization 
+Bert_Embeddings_Clustering - 2_Clusters.py -> Bert Visualization  
+Bert_Embeddings_Clustering - 5_Clusters.py -> Bert Visualization  
+Bert_Embeddings_Clustering - 10_Clusters.py -> Bert Visualization  
+
+The data file and metadata file for the dataset used in our task is already computed and can be found under ./data/final/projector/. 
+
+Refer: A step-by-step approach for the task is implemented under the ./tensorflow_projector/BERT+KMeans+TensorFlow_Projector_(PCA_TSNE).ipynb
 
 
 
@@ -97,6 +134,9 @@ The step-by-step illustration of the whole task is implemented under ./IPYNB FIL
 The accuracy of the model: 
 
 ```
-Validation accuracy: 0.8665
-Test accuracy: 0.8192
+K-Means (on Bert Embeddings) accuracy: 0.9377
+KNN (on Bert Embeddings) accuracy: 0.92735
 ```
+
+
+
