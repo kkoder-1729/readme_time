@@ -67,18 +67,18 @@ To get the efficient sentence embeddings, Bert is used in our task. Bert can be 
 
 1) Bert as a service
 
-Install the Bert server and client and start the service. Pre-trained Bert model can be downloaded from [[Link]](https://github.com/hanxiao/bert-as-service)
+    Install the Bert server and client and start the service. Pre-trained Bert model can be downloaded from [[Link]](https://github.com/hanxiao/bert-as-service)
 
-Then, start the BERT service and use the Client to get Sentence Encodes. The code for the same can be found in these two files:
+    Then, start the BERT service and use the Client to get Sentence Encodes. The code for the same can be found in these two files:
 
-- Bert_as_service.py
-- BERT_as_a_Service.ipynb
+    - Bert_as_service.py
+    - BERT_as_a_Service.ipynb
 
 2) Install Bert Model
 
-Install the Bert model to get sentence embeddings using pip installer. The dependencies for using this can be found in the following file. It contains a step-wise approach to use Bert Model.
+    Install the Bert model to get sentence embeddings using pip installer. The dependencies for using this can be found in the following file. It contains a step-wise approach     to use Bert Model.
 
-- Bert_model.py
+    - Bert_model.py
 
 
 
